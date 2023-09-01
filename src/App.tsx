@@ -227,6 +227,7 @@ function App(): JSX.Element {
   const handleTabChange = (event: React.SyntheticEvent, value: number) => {
     console.log("handleTabChange", value)
     setTaskStateTab(value);
+    setPage(0);
   };
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
@@ -264,7 +265,7 @@ function App(): JSX.Element {
 
       <br />
 
-      <Container  maxWidth="lg">
+      <Container maxWidth="lg">
         <Stack spacing={2}>
           {taskList?.map((item, index) => {
             return <TaskCard 
@@ -279,17 +280,26 @@ function App(): JSX.Element {
                       onDone={handleClickDoneButton} />
           })}
         </Stack>
-      </Container>
-
-      {pageCount > 1 && 
-        <Pagination 
-          count={pageCount} 
-          page={page + 1} 
-          onChange={handlePageChange} 
-          color="primary" 
-          style={paginationStyle} />}
+        <br />
+        {pageCount > 1 && 
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Pagination 
+            count={pageCount} 
+            page={page + 1} 
+            onChange={handlePageChange} 
+            color="primary" 
+            style={paginationStyle} 
+          />
+        </Box>
+        }
 
         <br />
+      </Container>
+
 
       <Fab sx={fabStyle} color="primary" aria-label="add" onClick={handleClickAddButton}>
         <AddIcon />

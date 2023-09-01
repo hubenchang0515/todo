@@ -1,6 +1,6 @@
-import { Dialog, DialogTitle, DialogContent, FormControl, TextField, DialogActions, Button, TextFieldProps, Rating, Typography, RatingProps } from "@mui/material";
-import { useRef, useState } from "react";
+import { Dialog, DialogTitle, DialogContent, FormControl, TextField, DialogActions, Button, Rating, Typography, Snackbar, Alert } from "@mui/material";
 import { TaskProps } from "./TaskCard";
+import { useState } from "react";
 
 export interface TaskEditDialogProps {
   open: boolean
@@ -11,7 +11,7 @@ export interface TaskEditDialogProps {
 
 function TaskEditDialog(props:TaskEditDialogProps) {
 
-  if (props.taskRef && !(props.taskRef.current)) {
+  if (props.taskRef) {
     props.taskRef.current = {title:"", description:"", rating:3, date:new Date()}
   }
 
@@ -33,6 +33,38 @@ function TaskEditDialog(props:TaskEditDialogProps) {
     }
   }
 
+  const [alert, setAlert] = useState(false);
+
+  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setAlert(false);
+  };
+
+
+  const onOk = () => {
+    setAlert(false);
+
+    if (props.taskRef?.current && props.taskRef.current.title.trim() === "") {
+      setAlert(true);
+      return;
+    }
+
+    if (props.onOk) {
+      props.onOk();
+    }
+  };
+
+  const onCancel = () => {
+    setAlert(false);
+
+    if (props.onCancel) {
+      props.onCancel();
+    }
+  }
+
   return (
       <Dialog open={props.open}>
       <DialogTitle>Add Task</DialogTitle>
@@ -45,9 +77,15 @@ function TaskEditDialog(props:TaskEditDialogProps) {
         <Rating name="simple-controlled" defaultValue={3} onChange={(_, value) => {setRating(Number(value))}}/>
       </DialogContent>
       <DialogActions>
-        <Button variant="outlined" onClick={props?.onCancel}>CANCEL</Button>
-        <Button variant="contained" onClick={props?.onOk}>OK</Button>
+        <Button variant="outlined" onClick={onCancel}>CANCEL</Button>
+        <Button variant="contained" onClick={onOk}>OK</Button>
       </DialogActions>
+      <Snackbar 
+        anchorOrigin={{vertical: "bottom", horizontal: "center"  }} open={alert} onClose={handleClose}>
+        <Alert elevation={6} onClose={handleClose} variant="filled" severity="error">
+          Task title should not be empty.
+        </Alert>
+      </Snackbar>
     </Dialog>
   )
 }
