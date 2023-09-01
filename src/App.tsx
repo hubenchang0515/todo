@@ -236,61 +236,60 @@ function App(): JSX.Element {
 
   return (
     <Box sx={{ flexGrow: 2 }}>
-      <Stack spacing={2}>
+      <AppBar position="static">
+        <Toolbar variant="dense">
+          <IconButton
+            size="small"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2 }}
+            href='https://github.com/hubenchang0515/todo/'
+            target='_blank'
+          >
+            <GitHubIcon />
+          </IconButton>
+          <Tabs 
+            value={taskStateTab}
+            indicatorColor="secondary"
+            textColor="inherit"
+            variant="fullWidth"
+            onChange={handleTabChange}>
+            <Tab label="To do"/>
+            <Tab label="Done"/>
+            <Tab label="Give up"/>
+          </Tabs>
+        </Toolbar>
+      </AppBar>
 
-        <AppBar position="static">
-          <Toolbar variant="dense">
-            <IconButton
-              size="small"
-              edge="start"
-              color="inherit"
-              aria-label="menu"
-              sx={{ mr: 2 }}
-              href='https://github.com/hubenchang0515/todo/'
-              target='_blank'
-            >
-              <GitHubIcon />
-            </IconButton>
-            <Tabs 
-              value={taskStateTab}
-              indicatorColor="secondary"
-              textColor="inherit"
-              variant="fullWidth"
-              onChange={handleTabChange}>
-              <Tab label="To do"/>
-              <Tab label="Done"/>
-              <Tab label="Give up"/>
-            </Tabs>
-          </Toolbar>
-        </AppBar>
+      <br />
 
-        <Container fixed>
-          <Stack spacing={2}>
-            {taskList?.map((item, index) => {
-              return <TaskCard 
-                        key={index} 
-                        title={item.title} 
-                        description={item.description} 
-                        date={item.date} 
-                        rating={item.rating}
-                        id={item.id}
-                        state={item.state}
-                        onDelete={handleClickDeleteButton}
-                        onDone={handleClickDoneButton} />
-            })}
-          </Stack>
-        </Container>
+      <Container  maxWidth="lg">
+        <Stack spacing={2}>
+          {taskList?.map((item, index) => {
+            return <TaskCard 
+                      key={index} 
+                      title={item.title} 
+                      description={item.description} 
+                      date={item.date} 
+                      rating={item.rating}
+                      id={item.id}
+                      state={item.state}
+                      onDelete={handleClickDeleteButton}
+                      onDone={handleClickDoneButton} />
+          })}
+        </Stack>
+      </Container>
 
-        {pageCount > 1 && 
-          <Pagination 
-            count={pageCount} 
-            page={page + 1} 
-            onChange={handlePageChange} 
-            color="primary" 
-            style={paginationStyle} />}
+      {pageCount > 1 && 
+        <Pagination 
+          count={pageCount} 
+          page={page + 1} 
+          onChange={handlePageChange} 
+          color="primary" 
+          style={paginationStyle} />}
 
         <br />
-      </Stack>
 
       <Fab sx={fabStyle} color="primary" aria-label="add" onClick={handleClickAddButton}>
         <AddIcon />
