@@ -172,7 +172,11 @@ function App(): JSX.Element {
         
         cursor.continue();
       } else {
-        setTaskList(tasks);
+        if (tasks.length > 0) {
+          setTaskList(tasks);
+        } else if (page > 0) {
+          setPage(page - 1);
+        }
       }
     }
   }
