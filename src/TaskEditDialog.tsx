@@ -1,4 +1,4 @@
-import { Dialog, DialogTitle, DialogContent, FormControl, TextField, DialogActions, Button, Rating, Typography, Snackbar, Alert } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, FormControl, TextField, DialogActions, Button, Rating, Typography, Snackbar, Alert, Stack } from "@mui/material";
 import { TaskProps } from "./TaskCard";
 import { useState } from "react";
 
@@ -66,15 +66,20 @@ function TaskEditDialog(props:TaskEditDialogProps) {
   }
 
   return (
-      <Dialog open={props.open}>
+      <Dialog open={props.open} maxWidth="md" fullWidth={true}>
       <DialogTitle>Add Task</DialogTitle>
-      <DialogContent sx={{ '& .MuiTextField-root': { m: 1, width: '25ch' },}}>
+      <DialogContent>
         <FormControl fullWidth>
+          <Stack spacing={2}>
           <TextField label="Task Title" variant="outlined" onChange={(e) => {setTitle(e.target.value)}}/>
-          <TextField label="Task Description" variant="outlined" multiline rows={4} onChange={(e) => {setDescription(e.target.value)}}/>
+          <TextField label="Task Description" variant="outlined" multiline rows={6} onChange={(e) => {setDescription(e.target.value)}}/>
+          <div>
+            <Typography component="legend">Rating</Typography>
+            <Rating name="simple-controlled" defaultValue={3} onChange={(_, value) => {setRating(Number(value))}}/>
+          </div>
+          </Stack>
         </FormControl>
-        <Typography component="legend">Rating</Typography>
-        <Rating name="simple-controlled" defaultValue={3} onChange={(_, value) => {setRating(Number(value))}}/>
+        
       </DialogContent>
       <DialogActions>
         <Button variant="outlined" onClick={onCancel}>CANCEL</Button>
