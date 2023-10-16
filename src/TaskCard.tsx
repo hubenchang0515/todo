@@ -6,6 +6,7 @@ import { Avatar, IconButton, Rating, Typography } from '@mui/material';
 import { blue } from '@mui/material/colors';
 import DeleteSweepOutlinedIcon from '@mui/icons-material/DeleteSweepOutlined';
 import PlaylistAddCheckOutlinedIcon from '@mui/icons-material/PlaylistAddCheckOutlined';
+import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
 
 export enum TaskState {
   TODO,
@@ -23,8 +24,9 @@ export interface TaskProps {
 };
 
 export interface TaskCardProps extends TaskProps {
-  onDelete?: (id:number)=>void,
-  onDone?: (id:number)=>void,
+  onDelete?: (task:TaskProps)=>void,
+  onEdit?: (task:TaskProps)=>void,
+  onDone?: (task:TaskProps)=>void,
 };
 
 
@@ -36,13 +38,19 @@ function TaskCard(props:TaskCardProps) {
   const dateFormat = {year:"numeric", month:"long", day:"numeric", hour:"numeric", minute:"numeric", second:"numeric"} as const;
   const onDelete = () => {
     if (props.onDelete && props.id) {
-      props.onDelete(props.id);
+      props.onDelete(props as TaskProps);
+    }
+  }
+
+  const onEdit = () => {
+    if (props.onEdit && props) {
+      props.onEdit(props as TaskProps);
     }
   }
 
   const onDone = () => {
     if (props.onDone && props.id) {
-      props.onDone(props.id);
+      props.onDone(props as TaskProps);
     }
   }
 
@@ -66,6 +74,9 @@ function TaskCard(props:TaskCardProps) {
         <Rating name="read-only" value={props.rating} readOnly/>
           <IconButton style={firstButtonStyle} onClick={onDelete}>
             <DeleteSweepOutlinedIcon color="secondary"/>
+          </IconButton>
+          <IconButton onClick={onEdit}>
+            <EditNoteOutlinedIcon color="primary"/>
           </IconButton>
           <IconButton disabled={props.state !== TaskState.TODO} onClick={onDone}>
             <PlaylistAddCheckOutlinedIcon color={props.state !== TaskState.TODO ? "disabled" : "primary"} />

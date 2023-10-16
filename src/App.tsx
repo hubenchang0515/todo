@@ -65,13 +65,55 @@ function App(): JSX.Element {
     }
   }, []);
 
+  // erase fields
+  const eraseTaskProps = (t: TaskProps, eraseId:boolean=false) => {
+    if (eraseId) {
+      return {
+        state: t.state,
+        title: t.title,
+        description: t.description,
+        date: t.date,
+        rating: t.rating,
+      };
+    } else {
+      return {
+        id: t.id,
+        state: t.state,
+        title: t.title,
+        description: t.description,
+        date: t.date,
+        rating: t.rating,
+      };
+    }
+  }
+
   // add task
   const addTask = (task: TaskProps) => {
+    task = eraseTaskProps(task, true);
     console.log(`addTask task=${task}`);
     if (db) {
       const request = db.transaction([tableName], 'readwrite')
         .objectStore(tableName)
         .add(task);
+
+      request.onsuccess = function () {
+        setTrigger(!trigger);
+      }
+
+      request.onerror = function () {
+        alert('Cannot write database');
+      }
+    }
+  }
+
+  // edit task
+  const modifyTask = (task:TaskProps) => {
+    task = eraseTaskProps(task);
+    console.log(`modifyTask task=${task}`);
+    if (db) {
+      const request = db.transaction([tableName], 'readwrite')
+        .objectStore(tableName)
+        .put(task);
 
       request.onsuccess = function () {
         setTrigger(!trigger);
@@ -96,32 +138,6 @@ function App(): JSX.Element {
       }
 
       request.onerror = () => {
-        alert('Cannot write database');
-      }
-    }
-  }
-
-  const setTaskState = (id:number, state:TaskState) => {
-    console.log(`setTaskState id=${id} state=${state}`);
-    if (db) {
-      const request = db.transaction([tableName], 'readwrite')
-        .objectStore(tableName)
-        .get(id);
-
-      request.onsuccess = () => {
-        if (request.result) {
-          let task = request.result;
-          task.state = state;
-          const request2 = db.transaction([tableName], 'readwrite')
-                          .objectStore(tableName)
-                          .put(task);
-          request2.onsuccess = () => {
-            setTrigger(!trigger);
-          }
-        }
-      }
-
-      request.onerror = (error) => {
         alert('Cannot write database');
       }
     }
@@ -190,11 +206,12 @@ function App(): JSX.Element {
     }
   }, [db, taskStateTab, page, pageSize, trigger]);
 
-  const taskRef = useRef<TaskProps | null>(null);
+  const taskRef:React.MutableRefObject<TaskProps | null> = useRef<TaskProps>(null);
 
   const [open, setOpen] = useState(false);
 
   const handleClickAddButton = () => {
+    taskRef.current = {title:"", description:"", rating:3, date:new Date()}
     setOpen(true);
   };
 
@@ -206,28 +223,44 @@ function App(): JSX.Element {
     if (!(taskRef.current))
       return;
 
-    let task = {
-      state: TaskState.TODO,
-      title: taskRef.current.title,
-      description: taskRef.current.description,
-      date: new Date(),
-      rating: taskRef.current?.rating,
+    if (taskRef.current.id) {
+      let task = {...taskRef.current}
+      modifyTask(task);
+    } else {
+      let task = {
+        ...taskRef.current,
+        state: TaskState.TODO,
+        date: new Date(),
+      }
+      addTask(task);
+      setTaskStateTab(TaskState.TODO);
     }
-
-    addTask(task);
     setOpen(false);
   };
 
-  const handleClickDeleteButton = (id:number) => {
-    if (taskStateTab === TaskState.TODO) {
-      setTaskState(id, TaskState.GIVE_UP);
-    } else {
-      delTask(id);
+  const handleClickDeleteButton = (task:TaskProps) => {
+    if (task.state === TaskState.TODO) {
+      let newTask = {
+        ...task,
+        state: TaskState.GIVE_UP,
+      };
+      modifyTask(newTask);
+    } else if (task.id) {
+      delTask(task.id);
     }
   }
 
-  const handleClickDoneButton = (id:number) => {
-    setTaskState(id, TaskState.DONE);
+  const handleClickEdit = (task:TaskProps) => {
+    taskRef.current = {...task};
+    setOpen(true);
+  }
+
+  const handleClickDoneButton = (task:TaskProps) => {
+    let newTask = {
+      ...task,
+      state: TaskState.DONE,
+    };
+    modifyTask(newTask);
   }
 
   const handleTabChange = (event: React.SyntheticEvent, value: number) => {
@@ -283,6 +316,7 @@ function App(): JSX.Element {
                       id={item.id}
                       state={item.state}
                       onDelete={handleClickDeleteButton}
+                      onEdit={handleClickEdit}
                       onDone={handleClickDoneButton} />
           })}
         </Stack>
