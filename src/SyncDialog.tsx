@@ -73,7 +73,7 @@ function SyncDialog(props:TaskCardProps) {
 
     const [peerId, setPeerId] = useState("");
 
-    const [waiting, setWaiting] = useState(true);
+    const [status, setStatus] = useState<"waiting"|"success"|"error">("waiting");
 
     const [messageShow, setMessageShow] = useState(false);
     const [messageColor, setMessageColor] = useState<AlertColor>("info");
@@ -91,26 +91,26 @@ function SyncDialog(props:TaskCardProps) {
             return;
         }
         if (peer && props.db && props.tableName) {
-            setWaiting(true);
+            setStatus("waiting");
             let conn = importData(peer, peerId, props.db, props.tableName);
 
             conn.on("close", () => {
                 props.onImport?.();
                 setMessageColor("success");
-                setMessage("Import Finished");
+                setMessage("Complete Import");
                 setMessageShow(true);
-                setWaiting(false);
+                setStatus("success");
             });
         }
     }
 
     useEffect(() => {
         if (props.open && !(peer?.id)) {
-            setWaiting(true);
+            setStatus("waiting");
             let peer = new Peer();
             peer.on("open", (id:string) => {
                 setPeer(peer);
-                setWaiting(false);
+                setStatus("success");
                 if (props.db && props.tableName) {
                     exportData(peer, props.db, props.tableName);
                 }
@@ -120,7 +120,7 @@ function SyncDialog(props:TaskCardProps) {
                     setMessageColor("error");
                     setMessage(`${err}`);
                     setMessageShow(true);
-                    setWaiting(true);
+                    setStatus("error");
                 }
             });
         } else if(!props.open){
@@ -137,10 +137,10 @@ function SyncDialog(props:TaskCardProps) {
                 <Button 
                     variant="outlined" 
                     startIcon={<ContentCopyOutlined />}
-                    disabled={waiting}
+                    disabled={status != "success"}
                     onClick={() => {
                         if (peer) {
-                            navigator.clipboard.writeText(peer.id).then(() =>{
+                            navigator?.clipboard?.writeText(peer.id).then(() =>{
                                 setMessageColor("success");
                                 setMessage(`Copied Host ID: ${peer?.id}`);
                                 setMessageShow(true);
@@ -153,21 +153,26 @@ function SyncDialog(props:TaskCardProps) {
                     <strong>Info:</strong> This dialog cannot be closed during synchronization.
                 </Alert>
                 <Alert severity="warning">
-                    <strong>Warning:</strong> Import from other device will clear current databse.
+                    <strong>Warning:</strong> Import from other device will clear current database.
                 </Alert>
                 <TextField 
                     label="Peer ID" 
                     variant="outlined" 
-                    disabled={waiting}
+                    disabled={status != "success"}
                     autoFocus
+                    autoComplete="off"
                     onChange={(e) => {setPeerId(e.target.value);}}
                 />
-                {waiting ? <LinearProgress /> : <></>}
+                <LinearProgress 
+                    color={status == "waiting"? "primary" : status} 
+                    variant={status == "waiting"? "indeterminate" : "determinate"} 
+                    value={100}
+                />
                 </Stack>
             </DialogContent>
             <DialogActions>
                 <Button variant="outlined" onClick={onClose}>CLOSE</Button>
-                <Button variant="contained" onClick={onImport} disabled={waiting}>IMPORT</Button>
+                <Button variant="contained" onClick={onImport} disabled={status != "success"}>IMPORT</Button>
             </DialogActions>
 
             <Snackbar 
