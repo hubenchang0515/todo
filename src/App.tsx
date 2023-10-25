@@ -2,9 +2,12 @@ import Container from '@mui/material/Container';
 import TaskCard, { TaskProps, TaskState } from './TaskCard';
 import { AppBar, Box, Fab, IconButton, Pagination, Stack, Tab, Tabs, Toolbar } from '@mui/material';
 import GitHubIcon from '@mui/icons-material/GitHub';
+import SyncAltOutlinedIcon from '@mui/icons-material/SyncAltOutlined';
 import AddIcon from '@mui/icons-material/Add'
 import React, { useEffect, useRef, useState } from 'react';
 import TaskEditDialog from './TaskEditDialog';
+import SyncDialog from './SyncDialog';
+import { setTextRange } from 'typescript';
 
 function App(): JSX.Element {
   const dbName = "todo";
@@ -22,6 +25,10 @@ function App(): JSX.Element {
   const paginationStyle = {
     marginLeft: "auto",
     marginRight: "auto",
+  }
+
+  const rightButtonStyle = {
+    marginLeft: "auto",
   }
 
   const [db, setDb] = useState<IDBDatabase>();
@@ -209,6 +216,8 @@ function App(): JSX.Element {
   const taskRef:React.MutableRefObject<TaskProps | null> = useRef<TaskProps>(null);
 
   const [open, setOpen] = useState(false);
+  
+  const [syncDialogOpen, setSyncDialogOpen] = useState(false);
 
   const handleClickAddButton = () => {
     taskRef.current = {title:"", description:"", rating:3, date:new Date()}
@@ -299,6 +308,16 @@ function App(): JSX.Element {
             <Tab label="Done"/>
             <Tab label="Give up"/>
           </Tabs>
+          <IconButton
+            size="small"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2 }}
+            style={rightButtonStyle}
+            onClick={()=>{setSyncDialogOpen(true);}}>
+            <SyncAltOutlinedIcon/>
+          </IconButton>
         </Toolbar>
       </AppBar>
 
@@ -340,7 +359,6 @@ function App(): JSX.Element {
         <br />
       </Container>
 
-
       <Fab sx={fabStyle} color="primary" aria-label="add" onClick={handleClickAddButton}>
         <AddIcon />
       </Fab>
@@ -350,6 +368,17 @@ function App(): JSX.Element {
         onCancel={handleClickCancelButton}
         onOk={handleClickOkButton}
         taskRef={taskRef} />
+
+      <SyncDialog
+        open={syncDialogOpen}
+        db={db}
+        tableName={tableName}
+        onClose={() => {
+          setSyncDialogOpen(false);
+        }}
+        onImport={() => {
+          setTrigger(!trigger);
+        }}/>
     </Box>
   );
 }
