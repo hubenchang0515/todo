@@ -2,7 +2,7 @@ import Container from '@mui/material/Container';
 import TaskCard, { TaskProps, TaskState } from './TaskCard';
 import { AppBar, Box, Fab, IconButton, Pagination, Stack, Tab, Tabs, Toolbar } from '@mui/material';
 import GitHubIcon from '@mui/icons-material/GitHub';
-import SyncAltOutlinedIcon from '@mui/icons-material/SyncAltOutlined';
+import LinkOutlinedIcon from '@mui/icons-material/LinkOutlined';
 import AddIcon from '@mui/icons-material/Add'
 import React, { useEffect, useRef, useState } from 'react';
 import TaskEditDialog from './TaskEditDialog';
@@ -24,10 +24,6 @@ function App(): JSX.Element {
   const paginationStyle = {
     marginLeft: "auto",
     marginRight: "auto",
-  }
-
-  const rightButtonStyle = {
-    marginLeft: "auto",
   }
 
   const [db, setDb] = useState<IDBDatabase>();
@@ -312,10 +308,9 @@ function App(): JSX.Element {
             edge="start"
             color="inherit"
             aria-label="menu"
-            sx={{ mr: 2 }}
-            style={rightButtonStyle}
+            sx={{ ml: "auto" }}
             onClick={()=>{setSyncDialogOpen(true);}}>
-            <SyncAltOutlinedIcon/>
+            <LinkOutlinedIcon />
           </IconButton>
         </Toolbar>
       </AppBar>

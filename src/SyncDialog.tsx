@@ -131,7 +131,7 @@ function SyncDialog(props:TaskCardProps) {
 
     return (
         <Dialog open={props.open} maxWidth="md" fullWidth={true}>
-            <DialogTitle>Sync</DialogTitle>
+            <DialogTitle>Synchronization</DialogTitle>
             <DialogContent>
                 <Stack spacing={2}>
                 <Button 
