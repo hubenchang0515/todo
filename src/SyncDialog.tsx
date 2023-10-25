@@ -3,7 +3,7 @@ import { Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button, S
 import { useEffect, useState } from "react";
 import { ContentCopyOutlined } from "@mui/icons-material";
 
-function exportData(peer:Peer, db:IDBDatabase, tableName:string) {
+function exportData(peer:Peer, db:IDBDatabase, tableName:string, callback?:()=>void) {
     peer.on("connection", (conn:DataConnection) => {
 
         conn.on("open", () => {
@@ -27,14 +27,16 @@ function exportData(peer:Peer, db:IDBDatabase, tableName:string) {
                     rating: cursor.value.rating,
                 };
                 
-                conn.send(task);
+                conn.send(task)?.then(() => {
+                    callback?.();
+                });
                 cursor.continue();
             };
         });
     });
 }
 
-function importData(peer:Peer, id:string, db:IDBDatabase, tableName:string) {
+function importData(peer:Peer, id:string, db:IDBDatabase, tableName:string, callback?:()=>void) {
     let conn = peer.connect(id);
     conn.on("open", () => {
         const request = db.transaction([tableName], 'readwrite')
@@ -51,9 +53,13 @@ function importData(peer:Peer, id:string, db:IDBDatabase, tableName:string) {
                     rating: data.rating,
                 }
 
-                db.transaction([tableName], 'readwrite')
+                let request = db.transaction([tableName], 'readwrite')
                     .objectStore(tableName)
                     .put(task);
+
+                request.onsuccess = () => {
+                    callback?.();
+                };
             });
         };
     });
@@ -92,10 +98,11 @@ function SyncDialog(props:TaskCardProps) {
         }
         if (peer && props.db && props.tableName) {
             setStatus("waiting");
-            let conn = importData(peer, peerId, props.db, props.tableName);
+            let conn = importData(peer, peerId, props.db, props.tableName, () => {
+                props.onImport?.();
+            });
 
             conn.on("close", () => {
-                props.onImport?.();
                 setMessageColor("success");
                 setMessage("Complete Import");
                 setMessageShow(true);
@@ -139,12 +146,16 @@ function SyncDialog(props:TaskCardProps) {
                     startIcon={<ContentCopyOutlined />}
                     disabled={status !== "success"}
                     onClick={() => {
-                        if (peer) {
+                        if (peer && navigator?.clipboard) {
                             navigator?.clipboard?.writeText(peer.id).then(() =>{
                                 setMessageColor("success");
                                 setMessage(`Copied Host ID: ${peer?.id}`);
                                 setMessageShow(true);
                             });
+                        } else {
+                            setMessageColor("error");
+                            setMessage(`Copied Host ID: Failed`);
+                            setMessageShow(true);
                         }
                     }}>
                     Host ID: {peer?.id?? "Waiting For ID"}
