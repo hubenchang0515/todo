@@ -1,6 +1,7 @@
 import Container from '@mui/material/Container';
 import TaskCard, { TaskProps, TaskState } from './TaskCard';
 import { AppBar, Box, Fab, IconButton, Pagination, Stack, Tab, Tabs, Toolbar } from '@mui/material';
+import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkOutlinedIcon from '@mui/icons-material/LinkOutlined';
 import AddIcon from '@mui/icons-material/Add'
@@ -316,9 +317,19 @@ function App(): JSX.Element {
             edge="start"
             color="inherit"
             aria-label="menu"
-            sx={{ ml: "auto" }}
+            sx={{ ml: "auto", mr:2 }}
             onClick={()=>{setSyncDialogOpen(true);}}>
             <LinkOutlinedIcon />
+          </IconButton>
+          <IconButton
+            size="small"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            href='https://github.com/hubenchang0515/todo/blob/master/document/USAGE.md'
+            target='_blank'
+          >
+            <HelpOutlineOutlinedIcon />
           </IconButton>
         </Toolbar>
       </AppBar>
