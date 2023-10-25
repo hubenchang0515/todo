@@ -267,6 +267,14 @@ function App(): JSX.Element {
     modifyTask(newTask);
   }
 
+  const handleClickRedoButton = (task:TaskProps) => {
+    let newTask = {
+      ...task,
+      state: TaskState.TODO,
+    };
+    modifyTask(newTask);
+  }
+
   const handleTabChange = (event: React.SyntheticEvent, value: number) => {
     console.log("handleTabChange", value)
     setTaskStateTab(value);
@@ -330,7 +338,8 @@ function App(): JSX.Element {
                       state={item.state}
                       onDelete={handleClickDeleteButton}
                       onEdit={handleClickEdit}
-                      onDone={handleClickDoneButton} />
+                      onDone={handleClickDoneButton}
+                      onRedo={handleClickRedoButton} />
           })}
         </Stack>
         <br />

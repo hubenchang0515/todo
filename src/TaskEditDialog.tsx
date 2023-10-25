@@ -67,7 +67,7 @@ function TaskEditDialog(props:TaskEditDialogProps) {
 
   return (
       <Dialog open={props.open} maxWidth="md" fullWidth={true}>
-      <DialogTitle>Add Task</DialogTitle>
+      <DialogTitle>Edit Task</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{
           '& .MuiTextField-root': { m: 1},
