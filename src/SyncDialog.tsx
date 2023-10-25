@@ -137,7 +137,7 @@ function SyncDialog(props:TaskCardProps) {
                 <Button 
                     variant="outlined" 
                     startIcon={<ContentCopyOutlined />}
-                    disabled={status != "success"}
+                    disabled={status !== "success"}
                     onClick={() => {
                         if (peer) {
                             navigator?.clipboard?.writeText(peer.id).then(() =>{
@@ -158,21 +158,21 @@ function SyncDialog(props:TaskCardProps) {
                 <TextField 
                     label="Peer ID" 
                     variant="outlined" 
-                    disabled={status != "success"}
+                    disabled={status !== "success"}
                     autoFocus
                     autoComplete="off"
                     onChange={(e) => {setPeerId(e.target.value);}}
                 />
                 <LinearProgress 
-                    color={status == "waiting"? "primary" : status} 
-                    variant={status == "waiting"? "indeterminate" : "determinate"} 
+                    color={status === "waiting"? "primary" : status} 
+                    variant={status === "waiting"? "indeterminate" : "determinate"} 
                     value={100}
                 />
                 </Stack>
             </DialogContent>
             <DialogActions>
                 <Button variant="outlined" onClick={onClose}>CLOSE</Button>
-                <Button variant="contained" onClick={onImport} disabled={status != "success"}>IMPORT</Button>
+                <Button variant="contained" onClick={onImport} disabled={status !== "success"}>IMPORT</Button>
             </DialogActions>
 
             <Snackbar 

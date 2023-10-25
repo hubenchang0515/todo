@@ -7,7 +7,6 @@ import AddIcon from '@mui/icons-material/Add'
 import React, { useEffect, useRef, useState } from 'react';
 import TaskEditDialog from './TaskEditDialog';
 import SyncDialog from './SyncDialog';
-import { setTextRange } from 'typescript';
 
 function App(): JSX.Element {
   const dbName = "todo";
