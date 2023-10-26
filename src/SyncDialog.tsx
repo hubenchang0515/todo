@@ -14,7 +14,7 @@ function exportData(peer:Peer, db:IDBDatabase, tableName:string, callback?:()=>v
             request.onsuccess = () => {
                 let cursor = request.result;
                 if (cursor == null) {
-                    conn.close();
+                    conn.close({flush:true,});
                     return;
                 }
 
@@ -30,7 +30,8 @@ function exportData(peer:Peer, db:IDBDatabase, tableName:string, callback?:()=>v
                 conn.send(task)?.then(() => {
                     callback?.();
                 });
-                cursor.continue();
+
+                cursor?.continue();
             };
         });
     });
@@ -90,12 +91,20 @@ function SyncDialog(props:TaskCardProps) {
     };
 
     const onImport = () => {
+        if (peerId.trim() === "") {
+            setMessageColor("error");
+            setMessage("Peer ID is empty");
+            setMessageShow(true);
+            return;
+        }
+        
         if (peerId === peer?.id) {
             setMessageColor("error");
             setMessage("Cannot import from current browser");
             setMessageShow(true);
             return;
         }
+
         if (peer && props.db && props.tableName) {
             setStatus("waiting");
             let conn = importData(peer, peerId, props.db, props.tableName, () => {
@@ -114,6 +123,8 @@ function SyncDialog(props:TaskCardProps) {
     useEffect(() => {
         if (props.open && !(peer?.id)) {
             setStatus("waiting");
+            setPeerId("");
+
             let peer = new Peer();
             peer.on("open", (id:string) => {
                 setPeer(peer);
@@ -170,7 +181,6 @@ function SyncDialog(props:TaskCardProps) {
                     label="Peer ID" 
                     variant="outlined" 
                     disabled={status !== "success"}
-                    autoFocus
                     autoComplete="off"
                     onChange={(e) => {setPeerId(e.target.value);}}
                 />

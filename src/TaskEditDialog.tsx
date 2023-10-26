@@ -72,8 +72,22 @@ function TaskEditDialog(props:TaskEditDialogProps) {
         <Stack spacing={2} sx={{
           '& .MuiTextField-root': { m: 1},
         }}>
-        <TextField label="Task Title" variant="outlined" autoFocus defaultValue={props.taskRef?.current?.title} onChange={(e) => {setTitle(e.target.value)}}/>
-        <TextField label="Task Description" variant="outlined" defaultValue={props.taskRef?.current?.description} multiline rows={6} onChange={(e) => {setDescription(e.target.value)}}/>
+        <TextField 
+          label="Task Title" 
+          variant="outlined" 
+          autoComplete="off" 
+          defaultValue={props.taskRef?.current?.title} 
+          onChange={(e) => {setTitle(e.target.value)}}
+        />
+        <TextField 
+          label="Task Description" 
+          variant="outlined" 
+          autoComplete="off" 
+          defaultValue={props.taskRef?.current?.description} 
+          multiline 
+          rows={6} 
+          onChange={(e) => {setDescription(e.target.value)}}
+        />
         <div>
           <Typography component="legend">Rating</Typography>
           <Rating name="simple-controlled" defaultValue={props.taskRef?.current?.rating || 3} onChange={(_, value) => {setRating(Number(value))}}/>

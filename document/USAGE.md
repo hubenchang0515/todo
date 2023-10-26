@@ -45,7 +45,7 @@
 3. Click the redo button - 点击重做按钮  
 ![redo-button](./images/redo-button.png)
 
-## Delete Task 删除任务
+## Delete Task - 删除任务
 
 1. Select DONE or GIVE-UP tab - 进入 DONE 或 GIVE UP 分页  
 ![done-tab](./images/done-tab.png)
@@ -81,6 +81,8 @@
 
 **Export** :  
 
+> **Info**: This dialog cannot be closed during synchronization.
+
 1. Find the navigation - 找到导航栏  
 ![navigation](./images/navigation.png)
 
@@ -94,6 +96,8 @@
 ![id-button](./images/id-button.png)
 
 **Import**: 
+
+> **Warning**: Import from other device will clear current database.
 
 1. Find the navigation - 找到导航栏  
 ![navigation](./images/navigation.png)
