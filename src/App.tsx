@@ -1,6 +1,6 @@
 import Container from '@mui/material/Container';
 import TaskCard, { TaskProps, TaskState } from './TaskCard';
-import { AppBar, Box, Fab, IconButton, Pagination, Stack, Tab, Tabs, Toolbar } from '@mui/material';
+import { AppBar, Box, createTheme, CssBaseline, Fab, IconButton, Pagination, PaletteMode, Stack, Tab, Tabs, Toolbar } from '@mui/material';
 import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkOutlinedIcon from '@mui/icons-material/LinkOutlined';
@@ -8,6 +8,7 @@ import AddIcon from '@mui/icons-material/Add'
 import React, { useEffect, useRef, useState } from 'react';
 import TaskEditDialog from './TaskEditDialog';
 import SyncDialog from './SyncDialog';
+import { ThemeProvider } from '@emotion/react';
 
 function App(): JSX.Element {
   const dbName = "todo";
@@ -18,8 +19,8 @@ function App(): JSX.Element {
 
   const fabStyle = {
     position: 'fixed',
-    bottom: 16,
-    right: 16,
+    bottom: 32,
+    right: 32,
   };
 
   const paginationStyle = {
@@ -287,113 +288,124 @@ function App(): JSX.Element {
     setPage(value - 1);
   }
 
+  const params = new URLSearchParams(window.location.search);
+
+  const theme = createTheme({
+    palette: {
+      mode: (params.get('theme')??'light') as PaletteMode ,
+    },
+  })
+
   return (
-    <Box sx={{ flexGrow: 2 }}>
-      <AppBar position="static">
-        <Toolbar variant="dense">
-          <IconButton
-            size="small"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-            href='https://github.com/hubenchang0515/todo/'
-            target='_blank'
-          >
-            <GitHubIcon />
-          </IconButton>
-          <Tabs 
-            value={taskStateTab}
-            indicatorColor="secondary"
-            textColor="inherit"
-            variant="fullWidth"
-            onChange={handleTabChange}>
-            <Tab label="To do"/>
-            <Tab label="Done"/>
-            <Tab label="Give up"/>
-          </Tabs>
-          <IconButton
-            size="small"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ ml: "auto", mr:2 }}
-            onClick={()=>{setSyncDialogOpen(true);}}>
-            <LinkOutlinedIcon />
-          </IconButton>
-          <IconButton
-            size="small"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            href='https://github.com/hubenchang0515/todo/blob/master/document/USAGE.md'
-            target='_blank'
-          >
-            <HelpOutlineOutlinedIcon />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-
-      <br />
-
-      <Container maxWidth="lg">
-        <Stack spacing={2}>
-          {taskList?.map((item, index) => {
-            return <TaskCard 
-                      key={index} 
-                      title={item.title} 
-                      description={item.description} 
-                      date={item.date} 
-                      rating={item.rating}
-                      id={item.id}
-                      state={item.state}
-                      onDelete={handleClickDeleteButton}
-                      onEdit={handleClickEdit}
-                      onDone={handleClickDoneButton}
-                      onRedo={handleClickRedoButton} />
-          })}
-        </Stack>
-        <br />
-        {pageCount > 1 && 
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-        >
-          <Pagination 
-            count={pageCount} 
-            page={page + 1} 
-            onChange={handlePageChange} 
-            color="primary" 
-            style={paginationStyle} 
-          />
-        </Box>
-        }
+    <ThemeProvider theme={theme}>
+      <CssBaseline/>
+      <Box sx={{ flexGrow: 2, minHeight: '100vh' }}>
+        <AppBar position="static">
+          <Toolbar variant="dense">
+            <IconButton
+              size="small"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              sx={{ mr: 2 }}
+              href='https://github.com/hubenchang0515/todo/'
+              target='_blank'
+            >
+              <GitHubIcon />
+            </IconButton>
+            <Tabs 
+              value={taskStateTab}
+              indicatorColor="secondary"
+              textColor="inherit"
+              variant="fullWidth"
+              onChange={handleTabChange}>
+              <Tab label="To do"/>
+              <Tab label="Done"/>
+              <Tab label="Give up"/>
+            </Tabs>
+            <IconButton
+              size="small"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              sx={{ ml: "auto", mr:2 }}
+              onClick={()=>{setSyncDialogOpen(true);}}>
+              <LinkOutlinedIcon />
+            </IconButton>
+            <IconButton
+              size="small"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              href='https://github.com/hubenchang0515/todo/blob/master/document/USAGE.md'
+              target='_blank'
+            >
+              <HelpOutlineOutlinedIcon />
+            </IconButton>
+          </Toolbar>
+        </AppBar>
 
         <br />
-      </Container>
 
-      <Fab sx={fabStyle} color="primary" aria-label="add" onClick={handleClickAddButton}>
-        <AddIcon />
-      </Fab>
+        <Container maxWidth="lg">
+          <Stack spacing={2}>
+            {taskList?.map((item, index) => {
+              return <TaskCard 
+                        key={index} 
+                        title={item.title} 
+                        description={item.description} 
+                        date={item.date} 
+                        rating={item.rating}
+                        id={item.id}
+                        state={item.state}
+                        onDelete={handleClickDeleteButton}
+                        onEdit={handleClickEdit}
+                        onDone={handleClickDoneButton}
+                        onRedo={handleClickRedoButton} />
+            })}
+          </Stack>
+          <br />
+          {pageCount > 1 && 
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Pagination 
+              count={pageCount} 
+              page={page + 1} 
+              onChange={handlePageChange} 
+              color="primary" 
+              style={paginationStyle} 
+            />
+          </Box>
+          }
 
-      <TaskEditDialog
-        open={open}
-        onCancel={handleClickCancelButton}
-        onOk={handleClickOkButton}
-        taskRef={taskRef} />
+          <br />
+        </Container>
 
-      <SyncDialog
-        open={syncDialogOpen}
-        db={db}
-        tableName={tableName}
-        onClose={() => {
-          setSyncDialogOpen(false);
-        }}
-        onImport={() => {
-          setTrigger(!trigger);
-        }}/>
-    </Box>
+        <Fab sx={fabStyle} color="primary" aria-label="add" onClick={handleClickAddButton}>
+          <AddIcon />
+        </Fab>
+
+        <TaskEditDialog
+          open={open}
+          onCancel={handleClickCancelButton}
+          onOk={handleClickOkButton}
+          taskRef={taskRef} />
+
+        <SyncDialog
+          open={syncDialogOpen}
+          db={db}
+          tableName={tableName}
+          onClose={() => {
+            setSyncDialogOpen(false);
+          }}
+          onImport={() => {
+            setTrigger(!trigger);
+          }}/>
+      </Box>
+    </ThemeProvider>
   );
 }
 

@@ -2,7 +2,7 @@ import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
-import { Avatar, IconButton, Rating, Typography } from '@mui/material';
+import { Avatar, IconButton, Paper, Rating, Typography } from '@mui/material';
 import { blue } from '@mui/material/colors';
 import DeleteSweepOutlinedIcon from '@mui/icons-material/DeleteSweepOutlined';
 import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
@@ -63,7 +63,7 @@ function TaskCard(props:TaskCardProps) {
   }
 
   return (
-    <Card variant="outlined">
+    <Paper elevation={3}>
       <CardHeader
         avatar={
             <Avatar sx={{ bgcolor: blue[500] }} aria-label="recipe">
@@ -96,7 +96,7 @@ function TaskCard(props:TaskCardProps) {
             </IconButton>
           }
       </CardActions>
-    </Card>
+    </Paper >
   );
 }
 
