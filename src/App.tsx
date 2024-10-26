@@ -317,7 +317,8 @@ function App(): JSX.Element {
               value={taskStateTab}
               indicatorColor="secondary"
               textColor="inherit"
-              variant="fullWidth"
+              variant="scrollable"
+              scrollButtons="auto"
               onChange={handleTabChange}>
               <Tab label="To do"/>
               <Tab label="Done"/>
